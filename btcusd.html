@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
+  <title>BTC/USD Price</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    let previousPrice = null;
+
+    async function fetchBitcoinPrice() {
+      try {
+        const response = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+        const data = await response.json();
+        const currentPrice = parseFloat(data.data.amount);
+
+        const priceElement = document.getElementById('btc-price');
+
+        if (previousPrice !== null) {
+          animatePriceChange(previousPrice, currentPrice, priceElement);
+        } else {
+          priceElement.textContent = `$${currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        previousPrice = currentPrice;
+      } catch (error) {
+        console.error('Error fetching Bitcoin price:', error);
+      }
+    }
+
+    function animatePriceChange(from, to, element) {
+      const duration = 1000; // Animation duration in milliseconds
+      const steps = 30; // Number of animation steps
+      const stepTime = duration / steps;
+      const stepAmount = (to - from) / steps;
+      let currentValue = from;
+      let stepCount = 0;
+
+      const interval = setInterval(() => {
+        stepCount++;
+        currentValue += stepAmount;
+
+        // Update the element text with the current value
+        element.textContent = `$${currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        // Update color based on direction
+        if (to > from) {
+          element.classList.remove('text-red-500');
+          element.classList.add('text-green-500');
+        } else if (to < from) {
+          element.classList.remove('text-green-500');
+          element.classList.add('text-red-500');
+        }
+
+        if (stepCount >= steps) {
+          clearInterval(interval);
+          // Ensure the final value is accurate
+          element.textContent = `$${to.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+      }, stepTime);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchBitcoinPrice(); // Fetch price on load
+      setInterval(fetchBitcoinPrice, 3000); // Update price every 3 seconds
+    });
+  </script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+<div>
+    <h1 class="text-4xl sm:text-6xl md:text-8xl lg:text-10xl font-bold">BTC/USD Price</h1>
+    <p id="btc-price" class="text-5xl sm:text-7xl md:text-9xl lg:text-12xl font-mono mt-4 text-white">Loading...</p>
+</div>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Service Worker Registered"))
+      .catch((error) => console.error("Service Worker Registration Failed:", error));
+  }
+</script>
+</body>
+</html>

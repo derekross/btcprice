@@ -1,0 +1,21 @@
+{
+  "name": "BTC/USD Price",
+  "short_name": "BTC/USD",
+  "start_url": "/btcusd.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1a202c",
+  "icons": [
+    {
+      "src": "/images/bitcoin-logo-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/bitcoin-logo-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
